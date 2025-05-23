@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const smsRouter = require('./textSmsController');
+const smsRouter = require('./controllers/textSmsController');
 
 app.use(express.json());
 app.use('/api/textsms', smsRouter);
