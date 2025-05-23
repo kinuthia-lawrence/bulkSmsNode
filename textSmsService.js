@@ -28,7 +28,7 @@ function formatMobileNumber(mobile) {
 async function sendSingleSms(mobile, message) {
   try {
     const data = {
-      apiKey: TEXTSMS_API_KEY,
+      apikey: TEXTSMS_API_KEY,
       partnerID: TEXTSMS_PARTNER_ID,
       message: message,
       shortcode: TEXTSMS_SENDER_ID,
@@ -39,8 +39,10 @@ async function sendSingleSms(mobile, message) {
   } catch (error) {
     console.error("Error sending SMS:", error);
     return {
-      "response-code": "9999",
-      "response-description": `Error:${error.message}`,
+      "response-code": e.response?.data?.["response-code"] || "9999",
+      "response-description":
+        e.response?.data?.["response-description"] ||
+        "Error: Unable to send SMS",
     };
   }
 }
@@ -54,7 +56,7 @@ async function sendSingleSms(mobile, message) {
 async function scheduleSms(mobile, message, timeToSend) {
   try {
     const data = {
-      apiKey: TEXTSMS_API_KEY,
+      apikey: TEXTSMS_API_KEY,
       partnerID: TEXTSMS_PARTNER_ID,
       message: message,
       shortcode: TEXTSMS_SENDER_ID,
@@ -65,8 +67,10 @@ async function scheduleSms(mobile, message, timeToSend) {
     return response.data;
   } catch (e) {
     return {
-      "response-code": "9999",
-      "response-description": `Error:${e.message}`,
+      "response-code": e.response?.data?.["response-code"] || "9999",
+      "response-description":
+        e.response?.data?.["response-description"] ||
+        "Error: Unable to send SMS",
     };
   }
 }
@@ -90,20 +94,22 @@ async function sendBulkSms(mobiles, message, clientSmsIds) {
     }
     const smsList = mobiles.map((mobile, i) => ({
       partnerID: TEXTSMS_PARTNER_ID,
-      apiKey: TEXTSMS_API_KEY,
-      passType: "plain",
+      apikey: TEXTSMS_API_KEY,
+      pass_type: "plain",
       shortcode: TEXTSMS_SENDER_ID,
       mobile: formatMobileNumber(mobile),
       message: message[i],
-      clientSmsId: clientSmsIds[i],
+      clientsmsid: clientSmsIds[i],
     }));
     const data = { count: mobiles.length, smsList };
     const response = await axios.post(TEXTSMS_BULK_URL, data);
     return response.data;
   } catch (e) {
     return {
-      "response-code": "9999",
-      "response-description": `Error:${e.message}`,
+      "response-code": e.response?.data?.["response-code"] || "9999",
+      "response-description":
+        e.response?.data?.["response-description"] ||
+        "Error: Unable to send bulk SMS",
     };
   }
 }
@@ -115,16 +121,18 @@ async function sendBulkSms(mobiles, message, clientSmsIds) {
 async function getDeliveryReport(messageId) {
   try {
     const data = {
-      apiKey: TEXTSMS_API_KEY,
+      apikey: TEXTSMS_API_KEY,
       partnerID: TEXTSMS_PARTNER_ID,
-      messageId: messageId,
+      messageID: messageId,
     };
     const response = await axios.post(TEXTSMS_DLR_URL, data);
     return response.data;
   } catch (e) {
     return {
-      "response-code": "9999",
-      "response-description": `Error:${e.message}`,
+      "response-code": e.response?.data?.["response-code"] || "9999",
+      "response-description":
+        e.response?.data?.["response-description"] ||
+        "Error: Unable to fetch delivery report",
     };
   }
 }
@@ -147,7 +155,6 @@ async function getAccountBalance() {
     });
     return response.data;
   } catch (e) {
-    console.error("Full error details:", e.response?.data || e.message);
     return {
       "response-code": e.response?.data?.["response-code"] || "9999",
       "response-description":
